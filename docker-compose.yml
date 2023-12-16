@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    container_name: rabbitmq
+    ports:
+      - '4369:4369'
+      - '5671:5671'
+      # AMQP protocol port
+      - '5672:5672'
+      - '25672:25672'
+      # HTTP management UI
+      - '15671:15671'
+      - '15672:15672'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping # Command to check health.
+      interval: 30s # Interval between health checks.
+      timeout: 30s # Timeout for each health checking.
+      retries: 3 # How many times retries.
+      start_period: 20s # Estimated time to boot.
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - virtualnet
+
+  notification-service:
+    container_name: notification-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8282:8000
+    restart: always
+    depends_on:
+      - rabbitmq
+
+networks:
+  virtualnet:
+    name: virtualnet
+    driver: bridge

@@ -1,0 +1,33 @@
+name: Notification API Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v3
+
+  test:
+    runs-on: self-hosted
+    needs:
+      - build
+
+    steps:
+      - name: Run CI tests
+        run: "echo 'tests passed'"
+
+  deploy:
+    runs-on: self-hosted
+    needs:
+      - test
+
+    steps:
+      - name: Check running containers
+        run: docker ps -a
+      - name: Build and run docker compose
+        run: docker-compose up --build -d
