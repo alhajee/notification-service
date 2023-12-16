@@ -1,5 +1,5 @@
 # Use the official Node.js 16 image as the base image
-FROM node:16 AS build
+FROM node:18 AS build
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN yarn build
 # ---------------------------------------
 # Production stage
 # ---------------------------------------
-FROM node:16-alpine AS production
+FROM node:18-alpine AS production
 
 WORKDIR /app
 
